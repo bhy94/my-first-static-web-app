@@ -5,10 +5,16 @@ function App() {
 
   useEffect(() => {
     (async function () {
-      const { text } = await( await fetch(`/api/message`)).json();
-      setData(text);
+      try {
+        const response = await fetch('/api/message');
+        const result = await response.json();
+        setData(result.text);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setData('Error loading message');
+      }
     })();
-  });
+  }, []); // 添加空數組作為依賴，確保 useEffect 只運行一次
 
   return <div>{data}</div>;
 }
