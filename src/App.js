@@ -467,7 +467,11 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(editingExpense),
+        body: JSON.stringify({
+          Amount: editingExpense.Amount,
+          Category: editingExpense.Category,
+          Description: editingExpense.Description
+        }),
       });
       
       if (!response.ok) throw new Error('更新消費記錄失敗');
@@ -755,37 +759,56 @@ function App() {
             <div style={{ marginBottom: '20px' }}>
               <input
                 type="number"
-                value={editingExpense.amount}
+                value={editingExpense.Amount}
                 onChange={(e) => setEditingExpense({
                   ...editingExpense,
-                  amount: e.target.value
+                  Amount: e.target.value
                 })}
                 placeholder="金额"
                 style={inputStyles}
               />
             </div>
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '20px', position: 'relative' }}>
               <select
-                value={editingExpense.category}
+                value={editingExpense.Category}
                 onChange={(e) => setEditingExpense({
                   ...editingExpense,
-                  category: e.target.value
+                  Category: e.target.value
                 })}
-                style={inputStyles}
+                style={{
+                  ...inputStyles,
+                  paddingLeft: '40px'
+                }}
               >
                 <option value="">选择类别</option>
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
+              {editingExpense.Category && categoryIcons[editingExpense.Category] && (
+                <img
+                  src={categoryIcons[editingExpense.Category].icon}
+                  alt={editingExpense.Category}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%'
+                  }}
+                  className="category-icon"
+                />
+              )}
             </div>
             <div style={{ marginBottom: '20px' }}>
               <input
                 type="text"
-                value={editingExpense.description}
+                value={editingExpense.Description}
                 onChange={(e) => setEditingExpense({
                   ...editingExpense,
-                  description: e.target.value
+                  Description: e.target.value
                 })}
                 placeholder="描述"
                 style={inputStyles}
