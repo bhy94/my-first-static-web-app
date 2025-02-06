@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 function App() {
-  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -26,6 +25,27 @@ function App() {
     '教育',
     '其他'
   ];
+
+  // 使用 useCallback 包裝 fetchExpenses 函數
+  const fetchExpenses = useCallback(async () => {
+    if (!currentUser) return;
+    
+    try {
+      const response = await fetch(`/api/expenses/${currentUser.UserID}`);
+      if (!response.ok) throw new Error('獲取消費記錄失敗');
+      const data = await response.json();
+      setExpenses(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [currentUser]);
+
+  // 登錄成功後獲取消費記錄
+  useEffect(() => {
+    if (isLoggedIn && currentUser) {
+      fetchExpenses();
+    }
+  }, [isLoggedIn, currentUser, fetchExpenses]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -61,18 +81,6 @@ function App() {
       setCurrentUser(null);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // 獲取消費記錄
-  const fetchExpenses = async () => {
-    try {
-      const response = await fetch(`/api/expenses/${currentUser.UserID}`);
-      if (!response.ok) throw new Error('獲取消費記錄失敗');
-      const data = await response.json();
-      setExpenses(data);
-    } catch (err) {
-      setError(err.message);
     }
   };
 
@@ -136,13 +144,6 @@ function App() {
       setError(err.message);
     }
   };
-
-  // 登錄成功後獲取消費記錄
-  useEffect(() => {
-    if (isLoggedIn && currentUser) {
-      fetchExpenses();
-    }
-  }, [isLoggedIn, currentUser]);
 
   if (!isLoggedIn) {
     return (
