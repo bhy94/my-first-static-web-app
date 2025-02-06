@@ -316,15 +316,7 @@ function App() {
   );
 
   // 消費類別選項
-  const categories = [
-    '飲食',
-    '交通',
-    '購物',
-    '娛樂',
-    '醫療',
-    '教育',
-    '其他'
-  ];
+  const categories = Object.keys(categoryIcons);
 
   // 使用 useCallback 包裝 fetchExpenses 函數
   const fetchExpenses = useCallback(async () => {
@@ -633,16 +625,37 @@ function App() {
             placeholder="金额"
             style={inputStyles}
           />
-          <select
-            value={newExpense.category}
-            onChange={(e) => setNewExpense({...newExpense, category: e.target.value})}
-            style={inputStyles}
-          >
-            <option value="">选择类别</option>
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
+          <div style={{ position: 'relative' }}>
+            <select
+              value={newExpense.category}
+              onChange={(e) => setNewExpense({...newExpense, category: e.target.value})}
+              style={{
+                ...inputStyles,
+                paddingLeft: '40px'
+              }}
+            >
+              <option value="">选择类别</option>
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            {newExpense.category && categoryIcons[newExpense.category] && (
+              <img
+                src={categoryIcons[newExpense.category].icon}
+                alt={newExpense.category}
+                style={{
+                  position: 'absolute',
+                  left: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%'
+                }}
+                className="category-icon"
+              />
+            )}
+          </div>
           <input
             type="text"
             value={newExpense.description}
@@ -675,7 +688,23 @@ function App() {
               <tr key={expense.RecordID}>
                 <td>{new Date(expense.RecordDate).toLocaleDateString('zh-CN')}</td>
                 <td style={{ color: shinChanTheme.accent }}>¥{parseFloat(expense.Amount).toFixed(2)}</td>
-                <td>{expense.Category}</td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {categoryIcons[expense.Category] && (
+                      <img
+                        src={categoryIcons[expense.Category].icon}
+                        alt={expense.Category}
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%'
+                        }}
+                        className="category-icon"
+                      />
+                    )}
+                    {expense.Category}
+                  </div>
+                </td>
                 <td>{expense.Description}</td>
                 <td>
                   <div style={{ display: 'flex', gap: '10px' }}>
