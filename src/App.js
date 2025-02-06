@@ -159,6 +159,22 @@ const navbarStyles = {
   }
 };
 
+// 添加模态框样式
+const modalStyles = {
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  backgroundColor: doraemonTheme.secondary,
+  padding: '30px',
+  borderRadius: '20px',
+  width: '90%',
+  maxWidth: '500px',
+  boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
+  zIndex: 1000,
+  border: `2px solid ${doraemonTheme.primary}`
+};
+
 function App() {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -518,6 +534,85 @@ function App() {
           </tbody>
         </table>
       </div>
+
+      {/* 添加编辑对话框 */}
+      {editingExpense && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 999
+        }}>
+          <div style={modalStyles}>
+            <h3 style={{ color: doraemonTheme.primary, marginTop: 0 }}>编辑支出记录</h3>
+            <div style={{ marginBottom: '20px' }}>
+              <input
+                type="number"
+                value={editingExpense.amount}
+                onChange={(e) => setEditingExpense({
+                  ...editingExpense,
+                  amount: e.target.value
+                })}
+                placeholder="金额"
+                style={inputStyles}
+              />
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <select
+                value={editingExpense.category}
+                onChange={(e) => setEditingExpense({
+                  ...editingExpense,
+                  category: e.target.value
+                })}
+                style={inputStyles}
+              >
+                <option value="">选择类别</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <input
+                type="text"
+                value={editingExpense.description}
+                onChange={(e) => setEditingExpense({
+                  ...editingExpense,
+                  description: e.target.value
+                })}
+                placeholder="描述"
+                style={inputStyles}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setEditingExpense(null)}
+                style={{
+                  ...buttonStyles,
+                  width: 'auto',
+                  padding: '8px 16px',
+                  backgroundColor: doraemonTheme.accent
+                }}
+              >
+                取消
+              </button>
+              <button
+                onClick={() => handleUpdateExpense(editingExpense.id)}
+                style={{
+                  ...buttonStyles,
+                  width: 'auto',
+                  padding: '8px 16px'
+                }}
+              >
+                保存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
