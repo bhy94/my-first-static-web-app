@@ -1,13 +1,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// 添加全局样式
+// 哆啦A梦主题颜色
+const doraemonTheme = {
+  primary: '#00A0E9', // 哆啦A梦的蓝色
+  secondary: '#FFFFFF', // 白色
+  accent: '#FF0000', // 红色（项圈）
+  yellow: '#FFD700', // 铃铛黄色
+  background: '#F0F8FF', // 淡蓝色背景
+};
+
+// 全局样式
 const globalStyles = {
-  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
+  fontFamily: '"Helvetica Neue", Arial, sans-serif',
   color: '#1d1d1f',
-  backgroundColor: '#f5f5f7',
+  backgroundColor: doraemonTheme.background,
   minHeight: '100vh',
   padding: '20px',
-  boxSizing: 'border-box'
+  boxSizing: 'border-box',
+  backgroundImage: 'url("https://i.imgur.com/8KYzqh9.png")', // 添加淡淡的哆啦A梦图案背景
+  backgroundSize: '200px',
+  backgroundRepeat: 'repeat',
+  backgroundOpacity: '0.1'
 };
 
 // 登录页面样式
@@ -16,13 +29,21 @@ const loginContainerStyles = {
   width: '90%',
   margin: '50px auto',
   padding: '30px',
-  backgroundColor: 'white',
+  backgroundColor: doraemonTheme.secondary,
   borderRadius: '20px',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  '@media (max-width: 480px)': {
-    width: '95%',
-    padding: '20px',
-    margin: '20px auto'
+  boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: '-60px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '100px',
+    height: '100px',
+    backgroundImage: 'url("https://i.imgur.com/QMk2mX1.png")', // 哆啦A梦头像
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat'
   }
 };
 
@@ -31,14 +52,14 @@ const inputStyles = {
   width: '100%',
   padding: '12px',
   fontSize: '16px',
-  border: '1px solid #d2d2d7',
+  border: `2px solid ${doraemonTheme.primary}`,
   borderRadius: '12px',
-  backgroundColor: '#f5f5f7',
+  backgroundColor: '#fff',
   transition: 'all 0.3s ease',
   outline: 'none',
   '&:focus': {
-    borderColor: '#0071e3',
-    backgroundColor: '#fff'
+    borderColor: doraemonTheme.accent,
+    boxShadow: '0 0 5px rgba(0, 160, 233, 0.3)'
   }
 };
 
@@ -48,14 +69,17 @@ const buttonStyles = {
   padding: '12px',
   fontSize: '16px',
   fontWeight: '500',
-  backgroundColor: '#0071e3',
-  color: 'white',
+  backgroundColor: doraemonTheme.primary,
+  color: doraemonTheme.secondary,
   border: 'none',
   borderRadius: '12px',
   cursor: 'pointer',
   transition: 'all 0.3s ease',
+  position: 'relative',
+  overflow: 'hidden',
   '&:hover': {
-    backgroundColor: '#0077ed'
+    backgroundColor: '#0088cc',
+    transform: 'translateY(-2px)'
   },
   '&:disabled': {
     backgroundColor: '#999',
@@ -65,18 +89,16 @@ const buttonStyles = {
 
 // 表格容器样式
 const tableContainerStyles = {
-  backgroundColor: 'white',
+  backgroundColor: doraemonTheme.secondary,
   borderRadius: '20px',
   padding: '20px',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
   overflowX: 'auto',
-  '@media (max-width: 768px)': {
-    padding: '10px',
-    borderRadius: '15px'
-  }
+  marginTop: '20px',
+  border: `2px solid ${doraemonTheme.primary}`
 };
 
-// 修改表格样式
+// 表格样式
 const tableStyles = {
   width: '100%',
   borderCollapse: 'separate',
@@ -84,13 +106,13 @@ const tableStyles = {
   '& th': {
     padding: '12px 16px',
     textAlign: 'left',
-    color: '#86868b',
-    fontWeight: '500',
-    borderBottom: '1px solid #d2d2d7'
+    color: doraemonTheme.primary,
+    fontWeight: '600',
+    borderBottom: `2px solid ${doraemonTheme.primary}`
   },
   '& td': {
     padding: '12px 16px',
-    backgroundColor: '#f5f5f7',
+    backgroundColor: 'rgba(0, 160, 233, 0.05)',
     '&:first-child': {
       borderTopLeftRadius: '12px',
       borderBottomLeftRadius: '12px'
@@ -99,70 +121,41 @@ const tableStyles = {
       borderTopRightRadius: '12px',
       borderBottomRightRadius: '12px'
     }
-  },
-  '@media (max-width: 768px)': {
-    '& th, & td': {
-      padding: '8px'
-    }
   }
 };
 
-// 添加新记录表单样式
+// 表单容器样式
 const formContainerStyles = {
-  backgroundColor: 'white',
+  backgroundColor: doraemonTheme.secondary,
   borderRadius: '20px',
   padding: '20px',
   marginBottom: '20px',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  '@media (max-width: 768px)': {
-    padding: '15px'
-  }
+  boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
+  border: `2px solid ${doraemonTheme.primary}`
 };
 
-// 响应式表单布局
-const formStyles = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-  gap: '15px',
-  '@media (max-width: 768px)': {
-    gridTemplateColumns: '1fr',
-    gap: '10px'
-  }
-};
-
-// 修改编辑对话框样式
-const modalStyles = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  backgroundColor: 'white',
-  padding: '30px',
-  borderRadius: '20px',
-  width: '90%',
-  maxWidth: '500px',
-  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.1)',
-  zIndex: 1000,
-  '@media (max-width: 480px)': {
-    width: '95%',
-    padding: '20px'
-  }
-};
-
-// 修改导航栏样式
+// 导航栏样式
 const navbarStyles = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  backdropFilter: 'blur(10px)',
+  backgroundColor: doraemonTheme.primary,
+  color: doraemonTheme.secondary,
   borderRadius: '20px',
   marginBottom: '20px',
-  '@media (max-width: 768px)': {
-    flexDirection: 'column',
-    gap: '10px',
-    textAlign: 'center'
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    bottom: '-10px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '50px',
+    height: '50px',
+    backgroundImage: 'url("https://i.imgur.com/YW3VBrP.png")', // 哆啦A梦的铃铛
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat'
   }
 };
 
@@ -186,6 +179,35 @@ function App() {
     description: ''
   });
   const [editingExpense, setEditingExpense] = useState(null);
+
+  // 添加动画效果状态
+  const [isHovering, setIsHovering] = useState(false);
+
+  // 添加提示消息组件
+  const DoraemonMessage = ({ message }) => (
+    <div style={{
+      position: 'fixed',
+      top: '20px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: doraemonTheme.primary,
+      color: doraemonTheme.secondary,
+      padding: '10px 20px',
+      borderRadius: '20px',
+      boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
+      zIndex: 1000,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px'
+    }}>
+      <img 
+        src="https://i.imgur.com/QMk2mX1.png" 
+        alt="Doraemon" 
+        style={{ width: '30px', height: '30px' }}
+      />
+      {message}
+    </div>
+  );
 
   // 消費類別選項
   const categories = [
@@ -327,246 +349,191 @@ function App() {
     }
   };
 
+  // 登录页面
+  const renderLoginPage = () => (
+    <div style={loginContainerStyles}>
+      <h2 style={{ 
+        textAlign: 'center', 
+        color: doraemonTheme.primary,
+        marginBottom: '30px'
+      }}>
+        欢迎使用哆啦A梦记账本
+      </h2>
+      <form onSubmit={handleLogin}>
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="输入用户名"
+            style={inputStyles}
+          />
+        </div>
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="输入密码"
+            style={inputStyles}
+          />
+        </div>
+        <button
+          type="submit"
+          style={buttonStyles}
+          disabled={isLoading}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          {isLoading ? '登录中...' : '登录'}
+          {isHovering && (
+            <img
+              src="https://i.imgur.com/YW3VBrP.png"
+              alt="bell"
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                width: '20px',
+                height: '20px',
+                animation: 'swing 1s infinite'
+              }}
+            />
+          )}
+        </button>
+      </form>
+      {error && <DoraemonMessage message={error} />}
+    </div>
+  );
+
+  // 记账界面
+  const renderExpenseTracker = () => (
+    <div>
+      <nav style={navbarStyles}>
+        <h1 style={{ margin: 0 }}>哆啦A梦的记账本</h1>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <span>欢迎回来, {currentUser?.username}</span>
+          <button
+            onClick={handleLogout}
+            style={{
+              ...buttonStyles,
+              width: 'auto',
+              padding: '8px 16px',
+              backgroundColor: doraemonTheme.accent
+            }}
+          >
+            退出
+          </button>
+        </div>
+      </nav>
+
+      <div style={formContainerStyles}>
+        <h3 style={{ color: doraemonTheme.primary, marginTop: 0 }}>添加新支出</h3>
+        <form onSubmit={handleAddExpense} style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '15px'
+        }}>
+          <input
+            type="number"
+            value={newExpense.amount}
+            onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+            placeholder="金额"
+            style={inputStyles}
+          />
+          <select
+            value={newExpense.category}
+            onChange={(e) => setNewExpense({...newExpense, category: e.target.value})}
+            style={inputStyles}
+          >
+            <option value="">选择类别</option>
+            {categories.map(category => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          <input
+            type="text"
+            value={newExpense.description}
+            onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+            placeholder="描述"
+            style={inputStyles}
+          />
+          <button type="submit" style={{
+            ...buttonStyles,
+            backgroundColor: doraemonTheme.primary
+          }}>
+            添加支出
+          </button>
+        </form>
+      </div>
+
+      <div style={tableContainerStyles}>
+        <table style={tableStyles}>
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>金额</th>
+              <th>类别</th>
+              <th>描述</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {expenses.map((expense) => (
+              <tr key={expense.id}>
+                <td>{new Date(expense.date).toLocaleDateString()}</td>
+                <td style={{ color: doraemonTheme.accent }}>¥{expense.amount}</td>
+                <td>{expense.category}</td>
+                <td>{expense.description}</td>
+                <td>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      onClick={() => setEditingExpense(expense)}
+                      style={{
+                        ...buttonStyles,
+                        width: 'auto',
+                        padding: '4px 8px',
+                        fontSize: '14px'
+                      }}
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExpense(expense.id)}
+                      style={{
+                        ...buttonStyles,
+                        width: 'auto',
+                        padding: '4px 8px',
+                        fontSize: '14px',
+                        backgroundColor: doraemonTheme.accent
+                      }}
+                    >
+                      删除
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div style={globalStyles}>
-      {!isLoggedIn ? (
-        <div style={loginContainerStyles}>
-          <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '24px' }}>登录</h2>
-          {error && (
-            <div style={{
-              color: '#ff3b30',
-              padding: '12px',
-              backgroundColor: '#fff2f2',
-              borderRadius: '12px',
-              marginBottom: '20px'
-            }}>
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ marginBottom: '8px', display: 'block' }}>用户名</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={inputStyles}
-                disabled={isLoading}
-              />
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ marginBottom: '8px', display: 'block' }}>密码</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={inputStyles}
-                disabled={isLoading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={buttonStyles}
-            >
-              {isLoading ? '登录中...' : '登录'}
-            </button>
-          </form>
-        </div>
-      ) : (
-        <div style={{ padding: '20px' }}>
-          <div style={navbarStyles}>
-            <h1 style={{ margin: 0, fontSize: '24px' }}>個人記賬系統</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {currentUser && (
-                <span style={{ color: '#666' }}>
-                  歡迎, {currentUser.UserName}
-                </span>
-              )}
-              <button 
-                onClick={handleLogout}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#ff3b30',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: '#ff453a'
-                  }
-                }}
-              >
-                登出
-              </button>
-            </div>
-          </div>
-
-          {/* 添加新消費記錄表單 */}
-          <div style={formContainerStyles}>
-            <h3>添加新消費記錄</h3>
-            <form onSubmit={handleAddExpense} style={formStyles}>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="金額"
-                value={newExpense.amount}
-                onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                style={{ ...inputStyles, padding: '8px' }}
-                required
-              />
-              <select
-                value={newExpense.category}
-                onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                style={{ ...inputStyles, padding: '8px' }}
-                required
-              >
-                <option value="">選擇類別</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                placeholder="描述"
-                value={newExpense.description}
-                onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                style={{ ...inputStyles, padding: '8px', flex: 1 }}
-              />
-              <button
-                type="submit"
-                style={buttonStyles}
-              >
-                添加
-              </button>
-            </form>
-          </div>
-
-          {/* 消費記錄列表 */}
-          <div style={tableContainerStyles}>
-            <table style={tableStyles}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>日期</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>金額</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>類別</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>描述</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {expenses.map((expense) => (
-                  <tr key={expense.RecordID}>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {new Date(expense.RecordDate).toLocaleString()}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      ¥{parseFloat(expense.Amount).toFixed(2)}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {expense.Category}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {expense.Description}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      <button
-                        onClick={() => setEditingExpense(expense)}
-                        style={{
-                          marginRight: '5px',
-                          padding: '4px 8px',
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        編輯
-                      </button>
-                      <button
-                        onClick={() => handleDeleteExpense(expense.RecordID)}
-                        style={{
-                          padding: '4px 8px',
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        刪除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* 編輯消費記錄對話框 */}
-          {editingExpense && (
-            <div style={modalStyles}>
-              <h3>編輯消費記錄</h3>
-              <div style={{ marginBottom: '10px' }}>
-                <label>金額：</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={editingExpense.Amount}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Amount: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '10px' }}>
-                <label>類別：</label>
-                <select
-                  value={editingExpense.Category}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Category: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <label>描述：</label>
-                <input
-                  type="text"
-                  value={editingExpense.Description}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Description: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button
-                  onClick={() => setEditingExpense(null)}
-                  style={buttonStyles}
-                >
-                  取消
-                </button>
-                <button
-                  onClick={() => handleUpdateExpense(editingExpense.RecordID)}
-                  style={buttonStyles}
-                >
-                  保存
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {!isLoggedIn ? renderLoginPage() : renderExpenseTracker()}
+      <style>
+        {`
+          @keyframes swing {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(15deg); }
+            75% { transform: translateY(-50%) rotate(-15deg); }
+            100% { transform: translateY(-50%) rotate(0deg); }
+          }
+        `}
+      </style>
     </div>
   );
 }
