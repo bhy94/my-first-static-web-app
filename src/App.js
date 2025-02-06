@@ -375,28 +375,27 @@ function App() {
         </div>
       ) : (
         <div style={{ padding: '20px' }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            padding: '10px',
-            marginBottom: '20px',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '4px'
-          }}>
-            <h1 style={{ margin: 0 }}>個人記賬系統</h1>
-            <div>
-              {currentUser && `歡迎, ${currentUser.UserName}`}
+          <div style={navbarStyles}>
+            <h1 style={{ margin: 0, fontSize: '24px' }}>個人記賬系統</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {currentUser && (
+                <span style={{ color: '#666' }}>
+                  歡迎, {currentUser.UserName}
+                </span>
+              )}
               <button 
                 onClick={handleLogout}
                 style={{
-                  marginLeft: '10px',
-                  padding: '5px 10px',
-                  backgroundColor: '#dc3545',
+                  padding: '8px 16px',
+                  backgroundColor: '#ff3b30',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#ff453a'
+                  }
                 }}
               >
                 登出
