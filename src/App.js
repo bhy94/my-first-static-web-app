@@ -1,24 +1,70 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// 哆啦A梦主题颜色
-const doraemonTheme = {
-  primary: '#00A0E9', // 哆啦A梦的蓝色
-  secondary: '#FFFFFF', // 白色
-  accent: '#FF0000', // 红色（项圈）
-  yellow: '#FFD700', // 铃铛黄色
-  background: '#F0F8FF', // 淡蓝色背景
+// 蜡笔小新主题颜色
+const shinChanTheme = {
+  primary: '#FF6B6B',     // 小新的红色
+  secondary: '#FFFFFF',   // 白色
+  accent: '#4A90E2',     // 动感超人的蓝色
+  yellow: '#FFD93D',     // 小白的黄色
+  green: '#6BCB77',      // 美伢的绿色
+  background: '#FFF4E6', // 温暖的背景色
 };
+
+// 小新表情包
+const shinChanEmotions = [
+  {
+    image: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000000'/%3E%3Cpath d='M30 40 Q50 70 70 40' stroke='white' fill='none' stroke-width='3'/%3E%3C/svg%3E`,
+    text: '我是一个快乐的小朋友~'
+  },
+  {
+    image: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000000'/%3E%3Cpath d='M30 60 Q50 30 70 60' stroke='white' fill='none' stroke-width='3'/%3E%3C/svg%3E`,
+    text: '最喜欢吃饼干了！'
+  },
+  {
+    image: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000000'/%3E%3Cpath d='M30 50 L70 50' stroke='white' fill='none' stroke-width='3'/%3E%3C/svg%3E`,
+    text: '美伢，我错了...'
+  }
+];
+
+// 支出类别图标
+const categoryIcons = {
+  '娱乐': {
+    icon: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='20' y='20' width='60' height='60' fill='%234A90E2'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='40'%3E超%3C/text%3E%3C/svg%3E`,
+    color: shinChanTheme.accent
+  },
+  '家居': {
+    icon: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%236BCB77'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='40'%3E家%3C/text%3E%3C/svg%3E`,
+    color: shinChanTheme.green
+  },
+  '食品': {
+    icon: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FFD93D'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='40'%3E食%3C/text%3E%3C/svg%3E`,
+    color: shinChanTheme.yellow
+  },
+  '其他': {
+    icon: `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23FF6B6B'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='white' font-size='40'%3E其%3C/text%3E%3C/svg%3E`,
+    color: shinChanTheme.primary
+  }
+};
+
+// 随机鼓励文字
+const encouragements = [
+  '今天也要开开心心哦~',
+  '省钱就是赚钱，动感超人说的！',
+  '记账的孩子最棒啦！',
+  '美伢夸你真懂事~',
+  '小白为你骄傲！'
+];
 
 // 全局样式
 const globalStyles = {
   fontFamily: '"Helvetica Neue", Arial, sans-serif',
   color: '#1d1d1f',
-  backgroundColor: doraemonTheme.background,
+  backgroundColor: shinChanTheme.background,
   minHeight: '100vh',
   padding: '20px',
   boxSizing: 'border-box',
-  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300A0E9' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='20' cy='20' r='10'/%3E%3C/g%3E%3C/svg%3E")`,
-  backgroundSize: '40px',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 20 Q40 20 40 30 T30 40 T20 30 T30 20' fill='none' stroke='%23FF6B6B' stroke-width='2' opacity='0.1'/%3E%3C/svg%3E")`,
+  backgroundSize: '60px',
   backgroundRepeat: 'repeat'
 };
 
@@ -28,19 +74,19 @@ const loginContainerStyles = {
   width: '90%',
   margin: '50px auto',
   padding: '30px',
-  backgroundColor: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.secondary,
   borderRadius: '20px',
-  boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
+  boxShadow: '0 4px 15px rgba(255, 107, 107, 0.2)',
   position: 'relative',
   '&::before': {
     content: '""',
     position: 'absolute',
-    top: '-60px',
+    top: '-80px',
     left: '50%',
     transform: 'translateX(-50%)',
-    width: '100px',
-    height: '100px',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300A0E9'/%3E%3Ccircle cx='50' cy='50' r='40' fill='white'/%3E%3Ccircle cx='50' cy='55' r='30' fill='%23FF0000'/%3E%3Ccircle cx='35' cy='40' r='8' fill='white'/%3E%3Ccircle cx='65' cy='40' r='8' fill='white'/%3E%3Ccircle cx='37' cy='40' r='4' fill='black'/%3E%3Ccircle cx='67' cy='40' r='4' fill='black'/%3E%3C/svg%3E")`,
+    width: '120px',
+    height: '120px',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23000'/%3E%3Cpath d='M30 40 Q50 70 70 40' stroke='white' fill='none' stroke-width='3'/%3E%3C/svg%3E")`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat'
   }
@@ -51,13 +97,13 @@ const inputStyles = {
   width: '100%',
   padding: '12px',
   fontSize: '16px',
-  border: `2px solid ${doraemonTheme.primary}`,
+  border: `2px solid ${shinChanTheme.primary}`,
   borderRadius: '12px',
   backgroundColor: '#fff',
   transition: 'all 0.3s ease',
   outline: 'none',
   '&:focus': {
-    borderColor: doraemonTheme.accent,
+    borderColor: shinChanTheme.accent,
     boxShadow: '0 0 5px rgba(0, 160, 233, 0.3)'
   }
 };
@@ -68,8 +114,8 @@ const buttonStyles = {
   padding: '12px',
   fontSize: '16px',
   fontWeight: '500',
-  backgroundColor: doraemonTheme.primary,
-  color: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.primary,
+  color: shinChanTheme.secondary,
   border: 'none',
   borderRadius: '12px',
   cursor: 'pointer',
@@ -88,13 +134,13 @@ const buttonStyles = {
 
 // 表格容器样式
 const tableContainerStyles = {
-  backgroundColor: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.secondary,
   borderRadius: '20px',
   padding: '20px',
   boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
   overflowX: 'auto',
   marginTop: '20px',
-  border: `2px solid ${doraemonTheme.primary}`
+  border: `2px solid ${shinChanTheme.primary}`
 };
 
 // 表格样式
@@ -105,9 +151,9 @@ const tableStyles = {
   '& th': {
     padding: '12px 16px',
     textAlign: 'left',
-    color: doraemonTheme.primary,
+    color: shinChanTheme.primary,
     fontWeight: '600',
-    borderBottom: `2px solid ${doraemonTheme.primary}`
+    borderBottom: `2px solid ${shinChanTheme.primary}`
   },
   '& td': {
     padding: '12px 16px',
@@ -125,12 +171,12 @@ const tableStyles = {
 
 // 表单容器样式
 const formContainerStyles = {
-  backgroundColor: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.secondary,
   borderRadius: '20px',
   padding: '20px',
   marginBottom: '20px',
   boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
-  border: `2px solid ${doraemonTheme.primary}`
+  border: `2px solid ${shinChanTheme.primary}`
 };
 
 // 导航栏样式
@@ -139,8 +185,8 @@ const navbarStyles = {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '20px',
-  backgroundColor: doraemonTheme.primary,
-  color: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.primary,
+  color: shinChanTheme.secondary,
   borderRadius: '20px',
   marginBottom: '20px',
   position: 'relative',
@@ -152,7 +198,7 @@ const navbarStyles = {
     transform: 'translateX(-50%)',
     width: '50px',
     height: '50px',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD700'/%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD93D'/%3E%3C/svg%3E")`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat'
   }
@@ -164,15 +210,50 @@ const modalStyles = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  backgroundColor: doraemonTheme.secondary,
+  backgroundColor: shinChanTheme.secondary,
   padding: '30px',
   borderRadius: '20px',
   width: '90%',
   maxWidth: '500px',
   boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
   zIndex: 1000,
-  border: `2px solid ${doraemonTheme.primary}`
+  border: `2px solid ${shinChanTheme.primary}`
 };
+
+// 添加新的动画样式
+const animations = `
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .category-icon {
+    transition: all 0.3s ease;
+  }
+  
+  .category-icon:hover {
+    animation: bounce 0.5s infinite;
+  }
+  
+  .expense-row {
+    transition: all 0.3s ease;
+  }
+  
+  .expense-row:hover {
+    transform: scale(1.02);
+  }
+`;
 
 function App() {
   const [error, setError] = useState(null);
@@ -198,6 +279,12 @@ function App() {
   // 添加动画效果状态
   const [isHovering, setIsHovering] = useState(false);
 
+  // 添加新状态
+  const [currentEmotion, setCurrentEmotion] = useState(0);
+  const [showEncouragement, setShowEncouragement] = useState(false);
+  const [encouragementText, setEncouragementText] = useState('');
+  const [signInDays, setSignInDays] = useState(0);
+
   // 添加提示消息组件
   const DoraemonMessage = ({ message }) => (
     <div style={{
@@ -205,8 +292,8 @@ function App() {
       top: '20px',
       left: '50%',
       transform: 'translateX(-50%)',
-      backgroundColor: doraemonTheme.primary,
-      color: doraemonTheme.secondary,
+      backgroundColor: shinChanTheme.primary,
+      color: shinChanTheme.secondary,
       padding: '10px 20px',
       borderRadius: '20px',
       boxShadow: '0 4px 15px rgba(0, 160, 233, 0.2)',
@@ -219,9 +306,9 @@ function App() {
         style={{ 
           width: '30px', 
           height: '30px',
-          backgroundColor: doraemonTheme.primary,
+          backgroundColor: shinChanTheme.primary,
           borderRadius: '50%',
-          border: `2px solid ${doraemonTheme.secondary}`
+          border: `2px solid ${shinChanTheme.secondary}`
         }}
       />
       {message}
@@ -307,7 +394,55 @@ function App() {
     localStorage.removeItem('currentUser');
   };
 
-  // 添加消費記錄
+  // 随机选择表情和文字
+  const getRandomEmotion = () => {
+    const randomIndex = Math.floor(Math.random() * shinChanEmotions.length);
+    setCurrentEmotion(randomIndex);
+  };
+
+  // 获取随机鼓励文字
+  const getRandomEncouragement = () => {
+    const randomIndex = Math.floor(Math.random() * encouragements.length);
+    return encouragements[randomIndex];
+  };
+
+  // 处理签到
+  const handleSignIn = () => {
+    const lastSignIn = localStorage.getItem('lastSignIn');
+    const today = new Date().toDateString();
+    
+    if (lastSignIn !== today) {
+      const days = parseInt(localStorage.getItem('signInDays') || '0') + 1;
+      setSignInDays(days);
+      localStorage.setItem('signInDays', days.toString());
+      localStorage.setItem('lastSignIn', today);
+      
+      setEncouragementText(`连续签到${days}天啦！${getRandomEncouragement()}`);
+      setShowEncouragement(true);
+      setTimeout(() => setShowEncouragement(false), 3000);
+    }
+  };
+
+  // 处理添加支出的动画效果
+  const handleExpenseAnimation = (amount) => {
+    const amountNum = parseFloat(amount);
+    let emotion;
+    
+    if (amountNum > 1000) {
+      emotion = 2; // 美伢生气表情
+    } else if (amountNum > 500) {
+      emotion = 1; // 小新心痛表情
+    } else {
+      emotion = 0; // 小新开心表情
+    }
+    
+    setCurrentEmotion(emotion);
+    setEncouragementText(getRandomEncouragement());
+    setShowEncouragement(true);
+    setTimeout(() => setShowEncouragement(false), 3000);
+  };
+
+  // 修改添加支出函数
   const handleAddExpense = async (e) => {
     e.preventDefault();
     try {
@@ -325,6 +460,7 @@ function App() {
       if (!response.ok) throw new Error('添加消費記錄失敗');
       
       await fetchExpenses();
+      handleExpenseAnimation(newExpense.amount);
       setNewExpense({ amount: '', category: '', description: '' });
     } catch (err) {
       setError(err.message);
@@ -371,9 +507,34 @@ function App() {
   // 登录页面
   const renderLoginPage = () => (
     <div style={loginContainerStyles}>
+      <div style={{
+        position: 'absolute',
+        top: '-100px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        textAlign: 'center'
+      }}>
+        <img
+          src={shinChanEmotions[currentEmotion].image}
+          alt="Shin-chan"
+          style={{
+            width: '120px',
+            height: '120px',
+            marginBottom: '10px',
+            animation: 'bounce 1s infinite'
+          }}
+        />
+        <div style={{
+          color: shinChanTheme.primary,
+          fontSize: '16px',
+          fontWeight: 'bold'
+        }}>
+          {shinChanEmotions[currentEmotion].text}
+        </div>
+      </div>
       <h2 style={{ 
         textAlign: 'center', 
-        color: doraemonTheme.primary,
+        color: shinChanTheme.primary,
         marginBottom: '30px'
       }}>
         欢迎使用哆啦A梦记账本
@@ -414,7 +575,7 @@ function App() {
                 transform: 'translateY(-50%)',
                 width: '20px',
                 height: '20px',
-                backgroundColor: doraemonTheme.yellow,
+                backgroundColor: shinChanTheme.yellow,
                 borderRadius: '50%',
                 animation: 'swing 1s infinite'
               }}
@@ -430,16 +591,27 @@ function App() {
   const renderExpenseTracker = () => (
     <div>
       <nav style={navbarStyles}>
-        <h1 style={{ margin: 0 }}>哆啦A梦的记账本</h1>
+        <h1 style={{ margin: 0 }}>蜡笔小新的记账本</h1>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <span>欢迎回来, {currentUser?.username}</span>
+          <button
+            onClick={handleSignIn}
+            style={{
+              ...buttonStyles,
+              width: 'auto',
+              padding: '8px 16px',
+              backgroundColor: shinChanTheme.yellow
+            }}
+          >
+            签到打卡
+          </button>
+          <span>已连续签到 {signInDays} 天</span>
           <button
             onClick={handleLogout}
             style={{
               ...buttonStyles,
               width: 'auto',
               padding: '8px 16px',
-              backgroundColor: doraemonTheme.accent
+              backgroundColor: shinChanTheme.accent
             }}
           >
             退出
@@ -448,7 +620,7 @@ function App() {
       </nav>
 
       <div style={formContainerStyles}>
-        <h3 style={{ color: doraemonTheme.primary, marginTop: 0 }}>添加新支出</h3>
+        <h3 style={{ color: shinChanTheme.primary, marginTop: 0 }}>添加新支出</h3>
         <form onSubmit={handleAddExpense} style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -480,7 +652,7 @@ function App() {
           />
           <button type="submit" style={{
             ...buttonStyles,
-            backgroundColor: doraemonTheme.primary
+            backgroundColor: shinChanTheme.primary
           }}>
             添加支出
           </button>
@@ -502,7 +674,7 @@ function App() {
             {expenses.map((expense) => (
               <tr key={expense.RecordID}>
                 <td>{new Date(expense.RecordDate).toLocaleDateString('zh-CN')}</td>
-                <td style={{ color: doraemonTheme.accent }}>¥{parseFloat(expense.Amount).toFixed(2)}</td>
+                <td style={{ color: shinChanTheme.accent }}>¥{parseFloat(expense.Amount).toFixed(2)}</td>
                 <td>{expense.Category}</td>
                 <td>{expense.Description}</td>
                 <td>
@@ -525,7 +697,7 @@ function App() {
                         width: 'auto',
                         padding: '4px 8px',
                         fontSize: '14px',
-                        backgroundColor: doraemonTheme.accent
+                        backgroundColor: shinChanTheme.accent
                       }}
                     >
                       删除
@@ -550,7 +722,7 @@ function App() {
           zIndex: 999
         }}>
           <div style={modalStyles}>
-            <h3 style={{ color: doraemonTheme.primary, marginTop: 0 }}>编辑支出记录</h3>
+            <h3 style={{ color: shinChanTheme.primary, marginTop: 0 }}>编辑支出记录</h3>
             <div style={{ marginBottom: '20px' }}>
               <input
                 type="number"
@@ -597,7 +769,7 @@ function App() {
                   ...buttonStyles,
                   width: 'auto',
                   padding: '8px 16px',
-                  backgroundColor: doraemonTheme.accent
+                  backgroundColor: shinChanTheme.accent
                 }}
               >
                 取消
@@ -616,8 +788,30 @@ function App() {
           </div>
         </div>
       )}
+
+      {showEncouragement && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          backgroundColor: shinChanTheme.primary,
+          color: shinChanTheme.secondary,
+          padding: '15px 25px',
+          borderRadius: '20px',
+          boxShadow: '0 4px 15px rgba(255, 107, 107, 0.2)',
+          animation: 'bounce 0.5s',
+          zIndex: 1000
+        }}>
+          {encouragementText}
+        </div>
+      )}
     </div>
   );
+
+  // 在组件加载时随机选择表情
+  useEffect(() => {
+    getRandomEmotion();
+  }, []);
 
   return (
     <div style={globalStyles}>
@@ -629,6 +823,13 @@ function App() {
             25% { transform: translateY(-50%) rotate(15deg); }
             75% { transform: translateY(-50%) rotate(-15deg); }
             100% { transform: translateY(-50%) rotate(0deg); }
+          }
+          ${animations}
+          .shin-chan-icon {
+            animation: bounce 1s infinite;
+          }
+          .encouragement {
+            animation: bounce 0.5s;
           }
         `}
       </style>
