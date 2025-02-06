@@ -7,27 +7,32 @@ app.http('message', {
     authLevel: 'anonymous',
     handler: async (request, context) => {
         try {
-            // 創建數據庫連接
+            // 測試連接
             const connection = await mysql.createConnection(dbConfig);
+            context.log('Database connected!');
             
-            // 執行查詢
-            const [rows] = await connection.execute('SELECT * FROM user');
+            // 測試查詢
+            const [rows] = await connection.execute('SELECT 1');
+            context.log('Query successful!');
             
-            // 關閉連接
+            // 實際查詢
+            const [users] = await connection.execute('SELECT * FROM user');
+            
             await connection.end();
             
             return {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(rows)
+                body: JSON.stringify(users)
             };
         } catch (error) {
             context.log.error('Database Error:', error);
             return {
                 status: 500,
                 body: JSON.stringify({
-                    error: '數據庫連接錯誤'
+                    error: '數據庫連接錯誤',
+                    details: error.message
                 })
             };
         }

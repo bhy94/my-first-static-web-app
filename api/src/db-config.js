@@ -5,7 +5,7 @@ const dbConfig = {
   database: 'accountbook', // 請替換為您的數據庫名稱
   port: 3306,
   ssl: {
-    rejectUnauthorized: true
+    rejectUnauthorized: false  // 如果遇到SSL問題，可以暫時設置為false
   }
 };
 
