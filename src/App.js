@@ -17,10 +17,9 @@ const globalStyles = {
   minHeight: '100vh',
   padding: '20px',
   boxSizing: 'border-box',
-  backgroundImage: 'url("https://i.imgur.com/8KYzqh9.png")', // 添加淡淡的哆啦A梦图案背景
-  backgroundSize: '200px',
-  backgroundRepeat: 'repeat',
-  backgroundOpacity: '0.1'
+  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300A0E9' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='20' cy='20' r='10'/%3E%3C/g%3E%3C/svg%3E")`,
+  backgroundSize: '40px',
+  backgroundRepeat: 'repeat'
 };
 
 // 登录页面样式
@@ -41,7 +40,7 @@ const loginContainerStyles = {
     transform: 'translateX(-50%)',
     width: '100px',
     height: '100px',
-    backgroundImage: 'url("https://i.imgur.com/QMk2mX1.png")', // 哆啦A梦头像
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2300A0E9'/%3E%3Ccircle cx='50' cy='50' r='40' fill='white'/%3E%3Ccircle cx='50' cy='55' r='30' fill='%23FF0000'/%3E%3Ccircle cx='35' cy='40' r='8' fill='white'/%3E%3Ccircle cx='65' cy='40' r='8' fill='white'/%3E%3Ccircle cx='37' cy='40' r='4' fill='black'/%3E%3Ccircle cx='67' cy='40' r='4' fill='black'/%3E%3C/svg%3E")`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat'
   }
@@ -153,7 +152,7 @@ const navbarStyles = {
     transform: 'translateX(-50%)',
     width: '50px',
     height: '50px',
-    backgroundImage: 'url("https://i.imgur.com/YW3VBrP.png")', // 哆啦A梦的铃铛
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD700'/%3E%3C/svg%3E")`,
     backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat'
   }
@@ -216,10 +215,14 @@ function App() {
       alignItems: 'center',
       gap: '10px'
     }}>
-      <img 
-        src="https://i.imgur.com/QMk2mX1.png" 
-        alt="Doraemon" 
-        style={{ width: '30px', height: '30px' }}
+      <div 
+        style={{ 
+          width: '30px', 
+          height: '30px',
+          backgroundColor: doraemonTheme.primary,
+          borderRadius: '50%',
+          border: `2px solid ${doraemonTheme.secondary}`
+        }}
       />
       {message}
     </div>
@@ -403,9 +406,7 @@ function App() {
         >
           {isLoading ? '登录中...' : '登录'}
           {isHovering && (
-            <img
-              src="https://i.imgur.com/YW3VBrP.png"
-              alt="bell"
+            <div
               style={{
                 position: 'absolute',
                 right: '10px',
@@ -413,6 +414,8 @@ function App() {
                 transform: 'translateY(-50%)',
                 width: '20px',
                 height: '20px',
+                backgroundColor: doraemonTheme.yellow,
+                borderRadius: '50%',
                 animation: 'swing 1s infinite'
               }}
             />
@@ -497,11 +500,11 @@ function App() {
           </thead>
           <tbody>
             {expenses.map((expense) => (
-              <tr key={expense.id}>
-                <td>{new Date(expense.date).toLocaleDateString()}</td>
-                <td style={{ color: doraemonTheme.accent }}>¥{expense.amount}</td>
-                <td>{expense.category}</td>
-                <td>{expense.description}</td>
+              <tr key={expense.RecordID}>
+                <td>{new Date(expense.RecordDate).toLocaleDateString('zh-CN')}</td>
+                <td style={{ color: doraemonTheme.accent }}>¥{parseFloat(expense.Amount).toFixed(2)}</td>
+                <td>{expense.Category}</td>
+                <td>{expense.Description}</td>
                 <td>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button
@@ -516,7 +519,7 @@ function App() {
                       编辑
                     </button>
                     <button
-                      onClick={() => handleDeleteExpense(expense.id)}
+                      onClick={() => handleDeleteExpense(expense.RecordID)}
                       style={{
                         ...buttonStyles,
                         width: 'auto',
@@ -600,7 +603,7 @@ function App() {
                 取消
               </button>
               <button
-                onClick={() => handleUpdateExpense(editingExpense.id)}
+                onClick={() => handleUpdateExpense(editingExpense.RecordID)}
                 style={{
                   ...buttonStyles,
                   width: 'auto',
