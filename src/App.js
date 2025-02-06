@@ -468,9 +468,9 @@ function App() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Amount: editingExpense.Amount,
-          Category: editingExpense.Category,
-          Description: editingExpense.Description
+          amount: editingExpense.Amount,
+          category: editingExpense.Category,
+          description: editingExpense.Description
         }),
       });
       
