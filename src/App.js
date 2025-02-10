@@ -171,6 +171,42 @@ const crayonStyles = {
   }
 };
 
+// 添加錯誤邊界處理
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error('Error:', error);
+        console.error('Error Info:', errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={crayonStyles.errorContainer}>
+                    <h2>哎呀！出錯了！</h2>
+                    <p>別擔心，讓我們重新開始吧！</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        style={crayonStyles.button}
+                    >
+                        重新載入
+                    </button>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
 function App() {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -315,15 +351,11 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-<<<<<<< HEAD
-        body: JSON.stringify(editingExpense),
-=======
         body: JSON.stringify({
-          Amount: editingExpense.Amount,
-          Category: editingExpense.Category,
-          Description: editingExpense.Description
+          amount: editingExpense.amount,
+          category: editingExpense.category,
+          description: editingExpense.description
         }),
->>>>>>> parent of 9878d47 (bugfixed)
       });
       
       if (!response.ok) throw new Error('更新消費記錄失敗');
@@ -360,288 +392,290 @@ function App() {
   };
 
   return (
-    <div style={{ 
-      backgroundColor: crayonStyles.colors.background,
-      minHeight: '100vh',
-      padding: '20px'
-    }}>
-      <h1 style={{
-        fontFamily: crayonStyles.fonts.title,
-        color: crayonStyles.colors.primary,
-        textAlign: 'center',
-        fontSize: '2.5rem'
+    <ErrorBoundary>
+      <div style={{ 
+        backgroundColor: crayonStyles.colors.background,
+        minHeight: '100vh',
+        padding: '20px'
       }}>
-        🍥 小新的零用錢管家 🥟
-      </h1>
-      
-      {!isLoggedIn ? (
-        <div style={loginContainerStyles}>
-          <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '24px' }}>登录</h2>
-          {error && (
-            <div style={{
-              color: '#ff3b30',
-              padding: '12px',
-              backgroundColor: '#fff2f2',
-              borderRadius: '12px',
-              marginBottom: '20px'
-            }}>
-              {error}
-            </div>
-          )}
-          {showRegister ? (
-            <RegisterForm 
-              onSuccess={handleRegisterSuccess}
-              onCancel={() => setShowRegister(false)}
-            />
-          ) : (
-            <>
-              <form onSubmit={handleLogin}>
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ marginBottom: '8px', display: 'block' }}>用户名</label>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    style={inputStyles}
+        <h1 style={{
+          fontFamily: crayonStyles.fonts.title,
+          color: crayonStyles.colors.primary,
+          textAlign: 'center',
+          fontSize: '2.5rem'
+        }}>
+          🍥 小新的零用錢管家 🥟
+        </h1>
+        
+        {!isLoggedIn ? (
+          <div style={loginContainerStyles}>
+            <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '24px' }}>登录</h2>
+            {error && (
+              <div style={{
+                color: '#ff3b30',
+                padding: '12px',
+                backgroundColor: '#fff2f2',
+                borderRadius: '12px',
+                marginBottom: '20px'
+              }}>
+                {error}
+              </div>
+            )}
+            {showRegister ? (
+              <RegisterForm 
+                onSuccess={handleRegisterSuccess}
+                onCancel={() => setShowRegister(false)}
+              />
+            ) : (
+              <>
+                <form onSubmit={handleLogin}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ marginBottom: '8px', display: 'block' }}>用户名</label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      style={inputStyles}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{ marginBottom: '8px', display: 'block' }}>密码</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      style={inputStyles}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <button
+                    type="submit"
                     disabled={isLoading}
-                  />
-                </div>
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{ marginBottom: '8px', display: 'block' }}>密码</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    style={inputStyles}
-                    disabled={isLoading}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  style={{
-                    ...buttonStyles,
-                    padding: '15px 30px',
-                    fontSize: '1.2rem'
-                  }}
-                >
-                  登入
-                </button>
-              </form>
-              {!isLoggedIn && (
-                <div style={{ textAlign: 'center', marginTop: 20 }}>
-                  還沒有帳號？ 
-                  <button 
-                    onClick={() => setShowRegister(true)}
-                    style={{ 
-                      background: 'none',
-                      border: 'none',
-                      color: '#0071e3',
-                      cursor: 'pointer'
+                    style={{
+                      ...buttonStyles,
+                      padding: '15px 30px',
+                      fontSize: '1.2rem'
                     }}
                   >
-                    立即註冊
+                    登入
                   </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      ) : (
-        <div style={{ padding: '20px' }}>
-          <div style={navbarStyles}>
-            <h1 style={{ margin: 0, fontSize: '24px' }}>個人記賬系統</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              {currentUser && (
-                <span style={{ color: '#666' }}>
-                  歡迎, {currentUser.UserName}
-                </span>
-              )}
-              <button 
-                onClick={handleLogout}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#ff3b30',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: '#ff453a'
-                  }
-                }}
-              >
-                登出
-              </button>
+                </form>
+                {!isLoggedIn && (
+                  <div style={{ textAlign: 'center', marginTop: 20 }}>
+                    還沒有帳號？ 
+                    <button 
+                      onClick={() => setShowRegister(true)}
+                      style={{ 
+                        background: 'none',
+                        border: 'none',
+                        color: '#0071e3',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      立即註冊
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        ) : (
+          <div style={{ padding: '20px' }}>
+            <div style={navbarStyles}>
+              <h1 style={{ margin: 0, fontSize: '24px' }}>個人記賬系統</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {currentUser && (
+                  <span style={{ color: '#666' }}>
+                    歡迎, {currentUser.UserName}
+                  </span>
+                )}
+                <button 
+                  onClick={handleLogout}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#ff3b30',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#ff453a'
+                    }
+                  }}
+                >
+                  登出
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* 添加新消費記錄表單 */}
-          <div style={formContainerStyles}>
-            <h3>添加新消費記錄</h3>
-            <form onSubmit={handleAddExpense} style={formStyles}>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="金額"
-                value={newExpense.amount}
-                onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                style={{ ...inputStyles, padding: '8px' }}
-                required
-              />
-              <select
-                value={newExpense.category}
-                onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
-                style={{ ...inputStyles, padding: '8px' }}
-                required
-              >
-                <option value="">選擇類別</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              <input
-                type="text"
-                placeholder="描述"
-                value={newExpense.description}
-                onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
-                style={{ ...inputStyles, padding: '8px', flex: 1 }}
-              />
-              <button
-                type="submit"
-                style={buttonStyles}
-              >
-                添加
-              </button>
-            </form>
-          </div>
-
-          {/* 消費記錄列表 */}
-          <div style={tableContainerStyles}>
-            <table style={tableStyles}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>日期</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>金額</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>類別</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>描述</th>
-                  <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                {expenses.map((expense) => (
-                  <tr key={expense.RecordID}>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {new Date(expense.RecordDate).toLocaleString()}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      ¥{parseFloat(expense.Amount).toFixed(2)}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {expense.Category}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      {expense.Description}
-                    </td>
-                    <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      <button
-                        onClick={() => setEditingExpense(expense)}
-                        style={{
-                          marginRight: '5px',
-                          padding: '4px 8px',
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        編輯
-                      </button>
-                      <button
-                        onClick={() => handleDeleteExpense(expense.RecordID)}
-                        style={{
-                          padding: '4px 8px',
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        刪除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* 編輯消費記錄對話框 */}
-          {editingExpense && (
-            <div style={modalStyles}>
-              <h3>編輯消費記錄</h3>
-              <div style={{ marginBottom: '10px' }}>
-                <label>金額：</label>
+            {/* 添加新消費記錄表單 */}
+            <div style={formContainerStyles}>
+              <h3>添加新消費記錄</h3>
+              <form onSubmit={handleAddExpense} style={formStyles}>
                 <input
                   type="number"
                   step="0.01"
-                  value={editingExpense.Amount}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Amount: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  placeholder="金額"
+                  value={newExpense.amount}
+                  onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                  style={{ ...inputStyles, padding: '8px' }}
+                  required
                 />
-              </div>
-              <div style={{ marginBottom: '10px' }}>
-                <label>類別：</label>
                 <select
-                  value={editingExpense.Category}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Category: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  value={newExpense.category}
+                  onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                  style={{ ...inputStyles, padding: '8px' }}
+                  required
                 >
+                  <option value="">選擇類別</option>
                   {categories.map(category => (
                     <option key={category} value={category}>{category}</option>
                   ))}
                 </select>
-              </div>
-              <div style={{ marginBottom: '20px' }}>
-                <label>描述：</label>
                 <input
                   type="text"
-                  value={editingExpense.Description}
-                  onChange={(e) => setEditingExpense({
-                    ...editingExpense,
-                    Description: e.target.value
-                  })}
-                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  placeholder="描述"
+                  value={newExpense.description}
+                  onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
+                  style={{ ...inputStyles, padding: '8px', flex: 1 }}
                 />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button
-                  onClick={() => setEditingExpense(null)}
+                  type="submit"
                   style={buttonStyles}
                 >
-                  取消
+                  添加
                 </button>
-                <button
-                  onClick={() => handleUpdateExpense(editingExpense.RecordID)}
-                  style={buttonStyles}
-                >
-                  保存
-                </button>
-              </div>
+              </form>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+
+            {/* 消費記錄列表 */}
+            <div style={tableContainerStyles}>
+              <table style={tableStyles}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>日期</th>
+                    <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>金額</th>
+                    <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>類別</th>
+                    <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>描述</th>
+                    <th style={{ padding: '12px 8px', backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.RecordID}>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
+                        {new Date(expense.RecordDate).toLocaleString()}
+                      </td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
+                        ¥{parseFloat(expense.Amount).toFixed(2)}
+                      </td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
+                        {expense.Category}
+                      </td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
+                        {expense.Description}
+                      </td>
+                      <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
+                        <button
+                          onClick={() => setEditingExpense(expense)}
+                          style={{
+                            marginRight: '5px',
+                            padding: '4px 8px',
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          編輯
+                        </button>
+                        <button
+                          onClick={() => handleDeleteExpense(expense.RecordID)}
+                          style={{
+                            padding: '4px 8px',
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          刪除
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 編輯消費記錄對話框 */}
+            {editingExpense && (
+              <div style={modalStyles}>
+                <h3>編輯消費記錄</h3>
+                <div style={{ marginBottom: '10px' }}>
+                  <label>金額：</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingExpense.Amount}
+                    onChange={(e) => setEditingExpense({
+                      ...editingExpense,
+                      Amount: e.target.value
+                    })}
+                    style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '10px' }}>
+                  <label>類別：</label>
+                  <select
+                    value={editingExpense.Category}
+                    onChange={(e) => setEditingExpense({
+                      ...editingExpense,
+                      Category: e.target.value
+                    })}
+                    style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <label>描述：</label>
+                  <input
+                    type="text"
+                    value={editingExpense.Description}
+                    onChange={(e) => setEditingExpense({
+                      ...editingExpense,
+                      Description: e.target.value
+                    })}
+                    style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button
+                    onClick={() => setEditingExpense(null)}
+                    style={buttonStyles}
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={() => handleUpdateExpense(editingExpense.RecordID)}
+                    style={buttonStyles}
+                  >
+                    保存
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </ErrorBoundary>
   );
 }
 
