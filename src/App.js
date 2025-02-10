@@ -267,47 +267,41 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      
-      // 先檢查 HTTP 狀態碼
-      if (!response.ok) {
-        const text = await response.text();
-        try {
-          const data = JSON.parse(text);
-          throw new Error(data.message || '登錄失敗');
-        } catch {
-          throw new Error(`伺服器錯誤: ${text}`);
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || '登錄失敗');
         }
-      }
 
-      const data = await response.json();
-      
-      if (data.success) {
-        setIsLoggedIn(true);
-        setCurrentUser(data.user);
-        // 保存到本地存储
-        localStorage.setItem('currentUser', JSON.stringify(data.user));
-        setError(null);
-      } else {
-        setError(data.message || '登錄失敗');
+        if (data.success) {
+            // 保存 token
+            localStorage.setItem('token', data.token);
+            // 保存用戶信息
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            
+            setIsLoggedIn(true);
+            setCurrentUser(data.user);
+            setError(null);
+        } else {
+            throw new Error(data.message || '登錄失敗');
+        }
+    } catch (err) {
+        console.error('Login error:', err);
+        setError(err.message || '登錄過程中發生錯誤');
         setIsLoggedIn(false);
         setCurrentUser(null);
+        localStorage.removeItem('token');
         localStorage.removeItem('currentUser');
-      }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.message || '登錄過程中發生錯誤');
-      setIsLoggedIn(false);
-      setCurrentUser(null);
-      localStorage.removeItem('currentUser');
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
 

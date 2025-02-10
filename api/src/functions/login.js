@@ -1,38 +1,50 @@
+const { app } = require('@azure/functions');
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const mysql = require('mysql2/promise');
-const dbConfig = require('../db-config');
+const config = require('../config');
 
-module.exports = async function (context, req) {
-    const pool = await mysql.createPool(dbConfig);
-    
-    if (req.method === 'POST') {
-        const { username, password } = req.body;
-        
+app.http('login', {
+    methods: ['POST'],
+    authLevel: 'anonymous',
+    handler: async (request, context) => {
         try {
+            const { username, password } = await request.json();
+            const pool = await mysql.createPool(config.database);
+            
             // 查詢用戶
             const [users] = await pool.execute(
-                'SELECT * FROM users WHERE username = ?',
+                'SELECT id, username, password FROM users WHERE username = ?',
                 [username]
             );
             
             if (users.length === 0) {
-                context.res = {
+                return {
                     status: 401,
-                    body: { message: "用戶名或密碼錯誤" }
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        success: false,
+                        message: "用戶名或密碼錯誤"
+                    })
                 };
-                return;
             }
             
             const user = users[0];
             const validPassword = await bcrypt.compare(password, user.password);
             
             if (!validPassword) {
-                context.res = {
+                return {
                     status: 401,
-                    body: { message: "用戶名或密碼錯誤" }
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        success: false,
+                        message: "用戶名或密碼錯誤"
+                    })
                 };
-                return;
             }
             
             // 更新最後登錄時間
@@ -44,25 +56,37 @@ module.exports = async function (context, req) {
             // 生成 JWT token
             const token = jwt.sign(
                 { userId: user.id, username: user.username },
-                process.env.JWT_SECRET || 'your-secret-key',
-                { expiresIn: '24h' }
+                config.jwt.secret,
+                { expiresIn: config.jwt.expiresIn }
             );
             
-            context.res = {
-                body: {
+            return {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    success: true,
                     token,
                     user: {
                         id: user.id,
                         username: user.username
                     }
-                }
+                })
             };
             
         } catch (error) {
-            context.res = {
+            context.log.error('Login Error:', error);
+            return {
                 status: 500,
-                body: { message: "登錄失敗：" + error.message }
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    success: false,
+                    message: "登錄失敗：" + error.message
+                })
             };
         }
     }
-}; 
+}); 
