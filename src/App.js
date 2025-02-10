@@ -223,8 +223,6 @@ function App() {
     description: ''
   });
   const [editingExpense, setEditingExpense] = useState(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [currentCharacter, setCurrentCharacter] = useState(characterAssets.shinchan.normal);
 
   // 消費類別選項
   const categories = [
@@ -366,47 +364,12 @@ function App() {
     }
   };
 
-  // 點擊角色互動
-  const handleCharacterClick = () => {
-    setCurrentCharacter(prev => 
-      prev === characterAssets.shinchan.normal 
-        ? characterAssets.shinchan.running 
-        : characterAssets.shinchan.normal
-    );
-    playSound('characterClick');
-  };
-
   return (
     <div style={{ 
       backgroundColor: crayonStyles.colors.background,
       minHeight: '100vh',
-      padding: '20px',
-      position: 'relative',
-      overflow: 'hidden'
+      padding: '20px'
     }}>
-      {/* 背景插畫元素 */}
-      <img 
-        src="/images/bg_clouds.png" 
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: -100,
-          width: 300,
-          opacity: 0.3,
-          animation: 'float 20s infinite linear'
-        }}
-      />
-      <img
-        src="/images/bg_balloon.png"
-        style={{
-          position: 'absolute',
-          top: '40%',
-          right: -150,
-          width: 400,
-          opacity: 0.2,
-          animation: 'float 15s infinite linear'
-        }}
-      />
       <h1 style={{
         fontFamily: crayonStyles.fonts.title,
         color: crayonStyles.colors.primary,
@@ -456,21 +419,11 @@ function App() {
               disabled={isLoading}
               style={{
                 ...buttonStyles,
-                background: `url(/images/button_bg.png) center/cover`,
                 padding: '15px 30px',
-                fontSize: '1.2rem',
-                position: 'relative'
+                fontSize: '1.2rem'
               }}
             >
-              <img 
-                src="/icons/run_icon.gif" 
-                style={{
-                  width: 32,
-                  marginRight: 10,
-                  verticalAlign: 'middle'
-                }}
-              />
-              {isLoading ? '登入中...' : '動感登入！'}
+              登入
             </button>
           </form>
         </div>
@@ -566,11 +519,6 @@ function App() {
                       ¥{parseFloat(expense.Amount).toFixed(2)}
                     </td>
                     <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
-                      <img 
-                        src={categoryIcons[expense.Category]} 
-                        alt={expense.Category}
-                        style={{ width: 32, height: 32, verticalAlign: 'middle', marginRight: 8 }}
-                      />
                       {expense.Category}
                     </td>
                     <td style={{ padding: '8px', borderBottom: '1px solid #dee2e6' }}>
@@ -673,26 +621,6 @@ function App() {
           )}
         </div>
       )}
-
-      {/* 新增小新角色裝飾 */}
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        width: '150px'
-      }}>
-        <img src={currentCharacter} alt="小新" onClick={handleCharacterClick} />
-      </div>
-
-      {/* 新增音效控制開關 */}
-      <div style={{position: 'fixed', top: 10, right: 10}}>
-        <button 
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          style={{background: 'none', border: 'none', cursor: 'pointer'}}
-        >
-          {soundEnabled ? '🔊' : '🔇'}
-        </button>
-      </div>
     </div>
   );
 }

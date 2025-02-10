@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# 新增忽略多媒體文件
+/public/images/
+/public/icons/
+/public/animations/
