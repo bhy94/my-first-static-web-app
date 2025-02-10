@@ -53,41 +53,48 @@ export default function RegisterForm({ onSuccess, onCancel }) {
         fontFamily: baseStyles.fonts.title,
         color: baseStyles.colors.secondary
       }}>
-        �� 新用戶註冊
+        🎉 新用戶註冊
       </h2>
       
-      <input 
-        type="text" 
-        placeholder="邀請碼 (找卞卞神大人領取)"
-        style={{
-          width: '100%',
-          padding: '10px',
-          margin: '10px 0',
-          border: `2px dashed ${baseStyles.colors.primary}`
-        }}
-      />
-      
-      <input
-        type="text"
-        value={formData.username}
-        onChange={(e) => setFormData({...formData, username: e.target.value})}
-        placeholder="用戶名 (4-20位英數)"
-      />
-      
-      {/* 其他表單欄位... */}
-      
-      <button
-        style={{
-          backgroundColor: baseStyles.colors.secondary,
-          color: 'white',
-          padding: '10px 20px',
-          borderRadius: '20px',
-          border: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        🎈 立即加入動感幼稚園
-      </button>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '15px' }}>
+          <input
+            type="text"
+            placeholder="🔑 魔法邀請碼"
+            value={formData.inviteCode}
+            onChange={(e) => setFormData({...formData, inviteCode: e.target.value})}
+            style={{
+              width: '100%',
+              padding: '10px',
+              margin: '10px 0',
+              border: `2px dashed ${baseStyles.colors.primary}`
+            }}
+          />
+        </div>
+
+        <input
+          type="text"
+          value={formData.username}
+          onChange={(e) => setFormData({...formData, username: e.target.value})}
+          placeholder="用戶名 (4-20位英數)"
+        />
+        
+        {/* 其他表單欄位... */}
+        
+        <button
+          type="submit"
+          style={{
+            backgroundColor: baseStyles.colors.secondary,
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '20px',
+            border: 'none',
+            cursor: 'pointer'
+          }}
+        >
+          🎈 立即加入動感幼稚園
+        </button>
+      </form>
 
       <button 
         type="button"
