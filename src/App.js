@@ -272,26 +272,31 @@ function App() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ 
+                username: username.trim(), 
+                password: password 
+            }),
         });
         
-        const data = await response.json().catch(() => {
+        let data;
+        try {
+            data = await response.json();
+        } catch (err) {
+            console.error('Response parsing error:', err);
             throw new Error('服務器響應格式錯誤');
-        });
+        }
         
-        if (!response.ok) {
+        if (!response.ok || !data.success) {
             throw new Error(data.message || '登錄失敗');
         }
 
-        if (data.success) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            setIsLoggedIn(true);
-            setCurrentUser(data.user);
-            setError(null);
-        } else {
-            throw new Error(data.message || '登錄失敗');
-        }
+        // 登錄成功
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        setIsLoggedIn(true);
+        setCurrentUser(data.user);
+        setError(null);
+        
     } catch (err) {
         console.error('Login error:', err);
         setError(err.message || '登錄過程中發生錯誤');

@@ -7,9 +7,16 @@ const config = require('../config');
 app.http('login', {
     methods: ['POST'],
     authLevel: 'anonymous',
+    route: 'login',
     handler: async (request, context) => {
+        context.log('Login request received');
+        
         try {
-            const { username, password } = await request.json();
+            const body = await request.json();
+            const { username, password } = body;
+            
+            context.log('Attempting login for user:', username);
+            
             const pool = await mysql.createPool(config.database);
             
             // 查詢用戶
@@ -19,15 +26,13 @@ app.http('login', {
             );
             
             if (users.length === 0) {
+                context.log('User not found:', username);
                 return {
                     status: 401,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                    jsonBody: {
                         success: false,
                         message: "用戶名或密碼錯誤"
-                    })
+                    }
                 };
             }
             
@@ -35,15 +40,13 @@ app.http('login', {
             const validPassword = await bcrypt.compare(password, user.password);
             
             if (!validPassword) {
+                context.log('Invalid password for user:', username);
                 return {
                     status: 401,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                    jsonBody: {
                         success: false,
                         message: "用戶名或密碼錯誤"
-                    })
+                    }
                 };
             }
             
@@ -53,7 +56,7 @@ app.http('login', {
                     userId: user.id, 
                     username: user.username 
                 },
-                process.env.JWT_SECRET,
+                process.env.JWT_SECRET || 'your-secret-key',
                 { expiresIn: '24h' }
             );
             
@@ -63,32 +66,28 @@ app.http('login', {
                 [user.id]
             );
             
+            context.log('Login successful for user:', username);
+            
             return {
                 status: 200,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+                jsonBody: {
                     success: true,
                     token,
                     user: {
                         id: user.id,
                         username: user.username
                     }
-                })
+                }
             };
             
         } catch (error) {
             context.log.error('Login Error:', error);
             return {
                 status: 500,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+                jsonBody: {
                     success: false,
                     message: "登錄失敗：" + error.message
-                })
+                }
             };
         }
     }
