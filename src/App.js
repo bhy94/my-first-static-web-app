@@ -190,6 +190,7 @@ function App() {
     description: ''
   });
   const [editingExpense, setEditingExpense] = useState(null);
+  const [showRegister, setShowRegister] = useState(false);
 
   // 消費類別選項
   const categories = [
@@ -237,6 +238,17 @@ function App() {
         body: JSON.stringify({ username, password }),
       });
       
+      // 先檢查 HTTP 狀態碼
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          throw new Error(data.message || '登錄失敗');
+        } catch {
+          throw new Error(`伺服器錯誤: ${text}`);
+        }
+      }
+
       const data = await response.json();
       
       if (data.success) {
@@ -246,14 +258,14 @@ function App() {
         localStorage.setItem('currentUser', JSON.stringify(data.user));
         setError(null);
       } else {
-        setError(data.message || '登录失败');
+        setError(data.message || '登錄失敗');
         setIsLoggedIn(false);
         setCurrentUser(null);
         localStorage.removeItem('currentUser');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('登录过程中发生错误：' + err.message);
+      setError(err.message || '登錄過程中發生錯誤');
       setIsLoggedIn(false);
       setCurrentUser(null);
       localStorage.removeItem('currentUser');
@@ -393,6 +405,22 @@ function App() {
               登入
             </button>
           </form>
+          {!isLoggedIn && (
+            <div style={{ textAlign: 'center', marginTop: 20 }}>
+              還沒有帳號？ 
+              <button 
+                onClick={() => setShowRegister(true)}
+                style={{ 
+                  background: 'none',
+                  border: 'none',
+                  color: '#0071e3',
+                  cursor: 'pointer'
+                }}
+              >
+                立即註冊
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div style={{ padding: '20px' }}>

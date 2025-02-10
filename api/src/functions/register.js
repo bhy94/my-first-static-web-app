@@ -51,6 +51,18 @@ app.http('register', {
                 .update(body.password)
                 .digest('hex');
 
+            // 加強用戶名格式驗證
+            const usernameRegex = /^[a-zA-Z0-9_]{4,20}$/;
+            if (!usernameRegex.test(body.username)) {
+                return {
+                    status: 400,
+                    body: JSON.stringify({
+                        success: false,
+                        message: '用戶名需為4-20位英數組合'
+                    })
+                };
+            }
+
             // 檢查用戶名是否重複
             const [existing] = await connection.execute(
                 'SELECT UserID FROM user WHERE UserName = ?',
@@ -112,4 +124,7 @@ app.http('register', {
             };
         }
     }
-}); 
+});
+
+// 確認已正確導出註冊函數
+module.exports = app; 

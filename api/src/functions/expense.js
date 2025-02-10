@@ -12,8 +12,10 @@ app.http('getExpenses', {
             const userId = request.params.userId;
             const connection = await mysql.createConnection(dbConfig);
             
-            const [records] = await connection.execute(
-                'SELECT * FROM expense_records WHERE UserID = ? ORDER BY RecordDate DESC',
+            const [rows] = await connection.execute(
+                `SELECT RecordID, Amount, Category, Description, 
+                DATE_FORMAT(RecordDate, '%Y-%m-%d %H:%i:%s') AS FormattedDate 
+                FROM expense_records WHERE UserID = ?`,
                 [userId]
             );
             
@@ -24,7 +26,7 @@ app.http('getExpenses', {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(records)
+                body: JSON.stringify(rows)
             };
         } catch (error) {
             context.log.error('Get Expenses Error:', error);

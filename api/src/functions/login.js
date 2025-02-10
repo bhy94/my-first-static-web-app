@@ -1,11 +1,19 @@
 const { app } = require('@azure/functions');
 const mysql = require('mysql2/promise');
 const dbConfig = require('../db-config');
+const crypto = require('crypto');
 
 app.http('login', {
     methods: ['POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
+        // 確保始終返回 JSON 格式
+        const jsonResponse = (status, body) => ({
+            status: status,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+
         try {
             const body = await request.json();
             const username = body.username;
@@ -16,10 +24,10 @@ app.http('login', {
 
             const connection = await mysql.createConnection(dbConfig);
             
-            // 修改 SQL 查詢以匹配數據庫表結構
+            // 加強 SQL 查詢安全性
             const [users] = await connection.execute(
-                'SELECT UserID, UserName FROM user WHERE UserName = ? AND UserPwd = ?',
-                [username, password]
+                'SELECT UserID, UserName, UserPwd FROM user WHERE UserName = ?',
+                [username]
             );
             
             await connection.end();
@@ -27,44 +35,34 @@ app.http('login', {
             // 添加更多日誌
             context.log('Query result:', users);
             
-            if (users && users.length > 0) {
-                return {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        success: true,
-                        user: {
-                            UserID: users[0].UserID,
-                            UserName: users[0].UserName
-                        }
-                    })
-                };
-            } else {
-                return {
-                    status: 401,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        success: false,
-                        message: '用戶名或密碼錯誤'
-                    })
-                };
-            }
-        } catch (error) {
-            context.log.error('Login Error:', error);
-            return {
-                status: 500,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+            // 驗證密碼匹配
+            const validUser = users.find(u => {
+                // 使用 SHA-256 加密比對
+                const hashedInput = crypto.createHash('sha256').update(password).digest('hex');
+                return u.UserPwd === hashedInput;
+            });
+            if (!validUser) {
+                return jsonResponse(401, { 
                     success: false,
-                    message: '登錄過程中發生錯誤：' + error.message
-                })
-            };
+                    message: '用戶名或密碼錯誤'
+                });
+            }
+
+            return jsonResponse(200, {
+                success: true,
+                user: {
+                    UserID: validUser.UserID,
+                    UserName: validUser.UserName
+                }
+            });
+
+        } catch (error) {
+            context.log.error('Database Error:', error);
+            return jsonResponse(500, {
+                success: false,
+                error: '系統錯誤',
+                details: process.env.NODE_ENV === 'development' ? error.message : null
+            });
         }
     }
 }); 

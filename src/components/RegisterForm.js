@@ -1,4 +1,7 @@
-export default function RegisterForm() {
+export default function RegisterForm({ onSuccess }) {
+  // 包含邀請碼、用戶名、密碼輸入欄位
+  // 與後端 /api/register 對接
+  // 包含表單驗證邏輯
   return (
     <div style={{
       maxWidth: '400px',
