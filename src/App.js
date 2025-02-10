@@ -343,6 +343,13 @@ function App() {
     }
   };
 
+  // 新增註冊表單渲染
+  const handleRegisterSuccess = () => {
+    setShowRegister(false);
+    setError(null);
+    // 可選：自動填充登錄表單
+  };
+
   return (
     <div style={{ 
       backgroundColor: crayonStyles.colors.background,
@@ -372,54 +379,63 @@ function App() {
               {error}
             </div>
           )}
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ marginBottom: '8px', display: 'block' }}>用户名</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                style={inputStyles}
-                disabled={isLoading}
-              />
-            </div>
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ marginBottom: '8px', display: 'block' }}>密码</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={inputStyles}
-                disabled={isLoading}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                ...buttonStyles,
-                padding: '15px 30px',
-                fontSize: '1.2rem'
-              }}
-            >
-              登入
-            </button>
-          </form>
-          {!isLoggedIn && (
-            <div style={{ textAlign: 'center', marginTop: 20 }}>
-              還沒有帳號？ 
-              <button 
-                onClick={() => setShowRegister(true)}
-                style={{ 
-                  background: 'none',
-                  border: 'none',
-                  color: '#0071e3',
-                  cursor: 'pointer'
-                }}
-              >
-                立即註冊
-              </button>
-            </div>
+          {showRegister ? (
+            <RegisterForm 
+              onSuccess={handleRegisterSuccess}
+              onCancel={() => setShowRegister(false)}
+            />
+          ) : (
+            <>
+              <form onSubmit={handleLogin}>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ marginBottom: '8px', display: 'block' }}>用户名</label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    style={inputStyles}
+                    disabled={isLoading}
+                  />
+                </div>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ marginBottom: '8px', display: 'block' }}>密码</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={inputStyles}
+                    disabled={isLoading}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  style={{
+                    ...buttonStyles,
+                    padding: '15px 30px',
+                    fontSize: '1.2rem'
+                  }}
+                >
+                  登入
+                </button>
+              </form>
+              {!isLoggedIn && (
+                <div style={{ textAlign: 'center', marginTop: 20 }}>
+                  還沒有帳號？ 
+                  <button 
+                    onClick={() => setShowRegister(true)}
+                    style={{ 
+                      background: 'none',
+                      border: 'none',
+                      color: '#0071e3',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    立即註冊
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (
