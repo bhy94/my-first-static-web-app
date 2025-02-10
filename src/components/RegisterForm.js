@@ -12,6 +12,17 @@ export default function RegisterForm({ onSuccess, onCancel }) {
     password: ''
   });
 
+  // 新增基礎樣式定義
+  const baseStyles = {
+    colors: {
+      primary: '#0071e3',
+      secondary: '#34c759'
+    },
+    fonts: {
+      title: '"SF Pro Display", "Helvetica Neue", sans-serif'
+    }
+  };
+
   // 新增表單提交處理
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,14 +46,14 @@ export default function RegisterForm({ onSuccess, onCancel }) {
       maxWidth: '400px',
       margin: '0 auto',
       padding: '20px',
-      border: `3px solid ${crayonStyles.colors.primary}`,
+      border: `3px solid ${baseStyles.colors.primary}`,
       borderRadius: '15px'
     }}>
       <h2 style={{ 
-        fontFamily: crayonStyles.fonts.title,
-        color: crayonStyles.colors.secondary
+        fontFamily: baseStyles.fonts.title,
+        color: baseStyles.colors.secondary
       }}>
-        🎉 新用戶註冊
+        �� 新用戶註冊
       </h2>
       
       <input 
@@ -52,7 +63,7 @@ export default function RegisterForm({ onSuccess, onCancel }) {
           width: '100%',
           padding: '10px',
           margin: '10px 0',
-          border: `2px dashed ${crayonStyles.colors.primary}`
+          border: `2px dashed ${baseStyles.colors.primary}`
         }}
       />
       
@@ -67,7 +78,7 @@ export default function RegisterForm({ onSuccess, onCancel }) {
       
       <button
         style={{
-          backgroundColor: crayonStyles.colors.secondary,
+          backgroundColor: baseStyles.colors.secondary,
           color: 'white',
           padding: '10px 20px',
           borderRadius: '20px',
@@ -82,7 +93,7 @@ export default function RegisterForm({ onSuccess, onCancel }) {
         type="button"
         onClick={onCancel}
         style={{
-          backgroundColor: crayonStyles.colors.secondary,
+          backgroundColor: baseStyles.colors.secondary,
           color: 'white',
           padding: '10px 20px',
           borderRadius: '20px',
