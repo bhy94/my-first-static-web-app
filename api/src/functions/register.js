@@ -1,6 +1,6 @@
 const { app } = require('@azure/functions');
 const mysql = require('mysql2/promise');
-const dbConfig = require('../db-config');
+const config = require('../config');
 const crypto = require('crypto');
 
 // 在頂部新增邀請碼生成器
@@ -23,7 +23,7 @@ app.http('register', {
             const body = await request.json();
             
             // 驗證邀請碼
-            const connection = await mysql.createConnection(dbConfig);
+            const connection = await mysql.createConnection(config.database);
             const [validCode] = await connection.execute(
                 'SELECT code FROM verification_codes WHERE code = ? AND is_used = FALSE',
                 [body.inviteCode]

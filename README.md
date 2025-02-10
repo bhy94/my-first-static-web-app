@@ -66,4 +66,6 @@
 - DB_PORT: 數據庫端口
 - JWT_SECRET: JWT 密鑰
 - NODE_ENV: 運行環境（development/production）
+- DB_SSL_CA: SSL 證書路徑（可選）
+- DB_CONNECTION_LIMIT: 連接池大小（默認：10）
 

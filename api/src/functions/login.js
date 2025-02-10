@@ -7,7 +7,7 @@ const config = require('../config');
 app.http('login', {
     methods: ['POST'],
     authLevel: 'anonymous',
-    route: 'login',
+    route: 'api/login',
     handler: async (request, context) => {
         context.log('Login request received');
         
@@ -29,10 +29,13 @@ app.http('login', {
                 context.log('User not found:', username);
                 return {
                     status: 401,
-                    jsonBody: {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
                         success: false,
                         message: "用戶名或密碼錯誤"
-                    }
+                    })
                 };
             }
             
@@ -43,10 +46,13 @@ app.http('login', {
                 context.log('Invalid password for user:', username);
                 return {
                     status: 401,
-                    jsonBody: {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
                         success: false,
                         message: "用戶名或密碼錯誤"
-                    }
+                    })
                 };
             }
             
@@ -70,24 +76,30 @@ app.http('login', {
             
             return {
                 status: 200,
-                jsonBody: {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
                     success: true,
                     token,
                     user: {
                         id: user.id,
                         username: user.username
                     }
-                }
+                })
             };
             
         } catch (error) {
             context.log.error('Login Error:', error);
             return {
                 status: 500,
-                jsonBody: {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
                     success: false,
                     message: "登錄失敗：" + error.message
-                }
+                })
             };
         }
     }

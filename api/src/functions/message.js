@@ -1,13 +1,13 @@
 const { app } = require('@azure/functions');
 const mysql = require('mysql2/promise');
-const dbConfig = require('../db-config');
+const config = require('../config');
 
 app.http('message', {
     methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         try {
-            const pool = await mysql.createPool(dbConfig);
+            const pool = await mysql.createPool(config.database);
             
             switch (request.method) {
                 case 'GET':

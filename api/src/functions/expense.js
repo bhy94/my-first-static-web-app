@@ -1,6 +1,6 @@
 const { app } = require('@azure/functions');
 const mysql = require('mysql2/promise');
-const dbConfig = require('../db-config');
+const config = require('../config');
 
 // 獲取用戶的所有消費記錄
 app.http('getExpenses', {
@@ -10,7 +10,7 @@ app.http('getExpenses', {
     handler: async (request, context) => {
         try {
             const userId = request.params.userId;
-            const connection = await mysql.createConnection(dbConfig);
+            const connection = await mysql.createConnection(config.database);
             
             const [rows] = await connection.execute(
                 `SELECT RecordID, Amount, Category, Description, 
@@ -49,7 +49,7 @@ app.http('addExpense', {
     handler: async (request, context) => {
         try {
             const { userId, amount, category, description } = await request.json();
-            const connection = await mysql.createConnection(dbConfig);
+            const connection = await mysql.createConnection(config.database);
             
             const [result] = await connection.execute(
                 'INSERT INTO expense_records (UserID, Amount, Category, Description) VALUES (?, ?, ?, ?)',
@@ -90,7 +90,7 @@ app.http('updateExpense', {
         try {
             const recordId = request.params.recordId;
             const { amount, category, description } = await request.json();
-            const connection = await mysql.createConnection(dbConfig);
+            const connection = await mysql.createConnection(config.database);
             
             await connection.execute(
                 'UPDATE expense_records SET Amount = ?, Category = ?, Description = ? WHERE RecordID = ?',
@@ -129,7 +129,7 @@ app.http('deleteExpense', {
     handler: async (request, context) => {
         try {
             const recordId = request.params.recordId;
-            const connection = await mysql.createConnection(dbConfig);
+            const connection = await mysql.createConnection(config.database);
             
             await connection.execute(
                 'DELETE FROM expense_records WHERE RecordID = ?',

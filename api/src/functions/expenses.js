@@ -1,9 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
 const mysql = require('mysql2/promise');
-const dbConfig = require('../db-config');
+const config = require('../config');
 
 module.exports = async function (context, req) {
-    const pool = await mysql.createPool(dbConfig);
+    const pool = await mysql.createPool(config.database);
     
     switch (req.method) {
         case 'GET':

@@ -267,7 +267,7 @@ function App() {
     setError(null);
 
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch('/api/login', {  // 確保路徑正確
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -280,7 +280,8 @@ function App() {
         
         let data;
         try {
-            data = await response.json();
+            const text = await response.text();
+            data = text ? JSON.parse(text) : {};  // 改進 JSON 解析
         } catch (err) {
             console.error('Response parsing error:', err);
             throw new Error('服務器響應格式錯誤');

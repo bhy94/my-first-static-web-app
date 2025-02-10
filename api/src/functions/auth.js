@@ -1,10 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
-const dbConfig = require('../db-config');
+const config = require('../config');
 const mysql = require('mysql2/promise');
 
 module.exports = async function (context, req) {
-    const pool = await mysql.createPool(dbConfig);
+    const pool = await mysql.createPool(config.database);
     
     if (req.method === 'POST') {
         const { username, password, code } = req.body;
