@@ -1,3 +1,4 @@
+import RegisterForm from './components/RegisterForm';
 import React, { useState, useEffect, useCallback } from 'react';
 
 // 登录页面样式
