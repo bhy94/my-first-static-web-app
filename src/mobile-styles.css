@@ -1,0 +1,17 @@
+@media (max-width: 768px) {
+  .expense-table {
+    font-size: 14px;
+    overflow-x: auto;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .shinchan-character {
+    width: 100px;
+    bottom: 10px;
+    right: 10px;
+  }
+} 
