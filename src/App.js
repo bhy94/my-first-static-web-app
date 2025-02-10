@@ -1,15 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-// 添加全局样式
-const globalStyles = {
-  fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
-  color: '#1d1d1f',
-  backgroundColor: '#f5f5f7',
-  minHeight: '100vh',
-  padding: '20px',
-  boxSizing: 'border-box'
-};
-
 // 登录页面样式
 const loginContainerStyles = {
   maxWidth: '400px',
@@ -178,29 +168,6 @@ const crayonStyles = {
     title: '"Comic Sans MS", cursive', // 漫畫字體
     content: '"Maitree", serif'
   }
-};
-
-// 新增角色圖片資源
-const characterAssets = {
-  shinchan: {
-    normal: '/images/shinchan_normal.png',
-    running: '/images/shinchan_running.gif',
-    surprised: '/images/shinchan_surprised.gif'
-  },
-  himawari: '/images/himawari.png',
-  actionKamen: '/images/action_kamen.png',
-  shiro: '/images/shiro.png'
-};
-
-// 類別圖示映射
-const categoryIcons = {
-  '飲食': '/icons/food.png',
-  '交通': '/icons/car.png',
-  '購物': '/icons/shopping.png',
-  '娛樂': '/icons/game.png',
-  '醫療': '/icons/medical.png',
-  '教育': '/icons/book.png',
-  '其他': '/icons/other.png'
 };
 
 function App() {
