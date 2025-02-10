@@ -1,11 +1,11 @@
 const dbConfig = {
-  host: 'bhyyy.mysql.database.azure.com',
-  user: 'bhyyy',
-  password: 'Bian0904!',
-  database: 'accountbook', // 請替換為您的數據庫名稱
-  port: 3306,
+  host: process.env.DB_HOST || 'bhyyy.mysql.database.azure.com',
+  user: process.env.DB_USER || 'bhyyy',
+  password: process.env.DB_PASSWORD || 'Bian0904!',
+  database: process.env.DB_NAME || 'accountbook',
+  port: process.env.DB_PORT || 3306,
   ssl: {
-    rejectUnauthorized: false  // 如果遇到SSL問題，可以暫時設置為false
+    rejectUnauthorized: true  // 生產環境中應該設置為 true
   }
 };
 

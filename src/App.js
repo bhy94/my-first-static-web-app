@@ -315,7 +315,15 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
+<<<<<<< HEAD
         body: JSON.stringify(editingExpense),
+=======
+        body: JSON.stringify({
+          Amount: editingExpense.Amount,
+          Category: editingExpense.Category,
+          Description: editingExpense.Description
+        }),
+>>>>>>> parent of 9878d47 (bugfixed)
       });
       
       if (!response.ok) throw new Error('更新消費記錄失敗');

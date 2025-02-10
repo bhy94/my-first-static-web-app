@@ -3,29 +3,44 @@ const mysql = require('mysql2/promise');
 const dbConfig = require('../db-config');
 
 app.http('message', {
-    methods: ['GET'],
+    methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         try {
-            // 測試連接
-            const connection = await mysql.createConnection(dbConfig);
-            context.log('Database connected!');
+            const pool = await mysql.createPool(dbConfig);
             
-            // 測試查詢
-            const [rows] = await connection.execute('SELECT 1');
-            context.log('Query successful!');
-            
-            // 實際查詢
-            const [users] = await connection.execute('SELECT * FROM user');
-            
-            await connection.end();
-            
-            return {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(users)
-            };
+            switch (request.method) {
+                case 'GET':
+                    const userId = request.headers['x-user-id'];
+                    const [messages] = await pool.execute(
+                        `SELECT * FROM messages 
+                         WHERE user_id = ? 
+                         ORDER BY created_at DESC 
+                         LIMIT 50`,
+                        [userId]
+                    );
+                    
+                    return {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(messages)
+                    };
+                    
+                case 'POST':
+                    const { title, content, type } = request.body;
+                    const userId = request.headers['x-user-id'];
+                    
+                    await pool.execute(
+                        `INSERT INTO messages (user_id, title, content, type) 
+                         VALUES (?, ?, ?, ?)`,
+                        [userId, title, content, type]
+                    );
+                    
+                    return {
+                        body: { message: "消息發送成功" }
+                    };
+            }
         } catch (error) {
             context.log.error('Database Error:', error);
             return {

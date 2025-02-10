@@ -25,7 +25,7 @@ app.http('register', {
             // 驗證邀請碼
             const connection = await mysql.createConnection(dbConfig);
             const [validCode] = await connection.execute(
-                'SELECT id FROM invitation_codes WHERE code = ? AND used = 0',
+                'SELECT code FROM verification_codes WHERE code = ? AND is_used = FALSE',
                 [body.inviteCode]
             );
             
@@ -40,9 +40,13 @@ app.http('register', {
             }
 
             // 標記邀請碼為已使用
+            const [userId] = await connection.execute(
+                'SELECT UserID FROM user WHERE UserName = ?',
+                [body.username]
+            );
             await connection.execute(
-                'UPDATE invitation_codes SET used = 1 WHERE code = ?',
-                [body.inviteCode]
+                'UPDATE verification_codes SET is_used = TRUE, used_by = ? WHERE code = ?',
+                [userId[0].UserID, body.inviteCode]
             );
 
             // 密碼加密

@@ -1,68 +1,68 @@
-const { app } = require('@azure/functions');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const mysql = require('mysql2/promise');
 const dbConfig = require('../db-config');
-const crypto = require('crypto');
 
-app.http('login', {
-    methods: ['POST'],
-    authLevel: 'anonymous',
-    handler: async (request, context) => {
-        // 確保始終返回 JSON 格式
-        const jsonResponse = (status, body) => ({
-            status: status,
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(body)
-        });
-
+module.exports = async function (context, req) {
+    const pool = await mysql.createPool(dbConfig);
+    
+    if (req.method === 'POST') {
+        const { username, password } = req.body;
+        
         try {
-            const body = await request.json();
-            const username = body.username;
-            const password = body.password;
-
-            // 添加日誌來幫助調試
-            context.log('Login attempt:', { username });
-
-            const connection = await mysql.createConnection(dbConfig);
-            
-            // 加強 SQL 查詢安全性
-            const [users] = await connection.execute(
-                'SELECT UserID, UserName, UserPwd FROM user WHERE UserName = ?',
+            // 查詢用戶
+            const [users] = await pool.execute(
+                'SELECT * FROM users WHERE username = ?',
                 [username]
             );
             
-            await connection.end();
-
-            // 添加更多日誌
-            context.log('Query result:', users);
-            
-            // 驗證密碼匹配
-            const validUser = users.find(u => {
-                // 使用 SHA-256 加密比對
-                const hashedInput = crypto.createHash('sha256').update(password).digest('hex');
-                return u.UserPwd === hashedInput;
-            });
-            if (!validUser) {
-                return jsonResponse(401, { 
-                    success: false,
-                    message: '用戶名或密碼錯誤'
-                });
+            if (users.length === 0) {
+                context.res = {
+                    status: 401,
+                    body: { message: "用戶名或密碼錯誤" }
+                };
+                return;
             }
-
-            return jsonResponse(200, {
-                success: true,
-                user: {
-                    UserID: validUser.UserID,
-                    UserName: validUser.UserName
+            
+            const user = users[0];
+            const validPassword = await bcrypt.compare(password, user.password);
+            
+            if (!validPassword) {
+                context.res = {
+                    status: 401,
+                    body: { message: "用戶名或密碼錯誤" }
+                };
+                return;
+            }
+            
+            // 更新最後登錄時間
+            await pool.execute(
+                'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
+                [user.id]
+            );
+            
+            // 生成 JWT token
+            const token = jwt.sign(
+                { userId: user.id, username: user.username },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '24h' }
+            );
+            
+            context.res = {
+                body: {
+                    token,
+                    user: {
+                        id: user.id,
+                        username: user.username
+                    }
                 }
-            });
-
+            };
+            
         } catch (error) {
-            context.log.error('Database Error:', error);
-            return jsonResponse(500, {
-                success: false,
-                error: '系統錯誤',
-                details: process.env.NODE_ENV === 'development' ? error.message : null
-            });
+            context.res = {
+                status: 500,
+                body: { message: "登錄失敗：" + error.message }
+            };
         }
     }
-}); 
+}; 
