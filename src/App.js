@@ -275,18 +275,17 @@ function App() {
             body: JSON.stringify({ username, password }),
         });
         
-        const data = await response.json();
+        const data = await response.json().catch(() => {
+            throw new Error('服務器響應格式錯誤');
+        });
         
         if (!response.ok) {
             throw new Error(data.message || '登錄失敗');
         }
 
         if (data.success) {
-            // 保存 token
             localStorage.setItem('token', data.token);
-            // 保存用戶信息
             localStorage.setItem('currentUser', JSON.stringify(data.user));
-            
             setIsLoggedIn(true);
             setCurrentUser(data.user);
             setError(null);

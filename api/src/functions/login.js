@@ -47,17 +47,20 @@ app.http('login', {
                 };
             }
             
+            // 生成 JWT token
+            const token = jwt.sign(
+                { 
+                    userId: user.id, 
+                    username: user.username 
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+            
             // 更新最後登錄時間
             await pool.execute(
                 'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
                 [user.id]
-            );
-            
-            // 生成 JWT token
-            const token = jwt.sign(
-                { userId: user.id, username: user.username },
-                config.jwt.secret,
-                { expiresIn: config.jwt.expiresIn }
             );
             
             return {
@@ -89,4 +92,6 @@ app.http('login', {
             };
         }
     }
-}); 
+});
+
+module.exports = app; 

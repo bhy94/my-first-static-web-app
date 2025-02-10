@@ -31,7 +31,7 @@ INSERT INTO messages (id, user_id, title, content, type, is_read, created_at) VA
 (UUID(), @test_user_id, '消費提醒', '本月消費已超過預算的80%', '提醒', FALSE, DATE_SUB(NOW(), INTERVAL 1 DAY)),
 (UUID(), @test_user_id, '新功能通知', '新增了消費統計圖表功能', '通知', FALSE, DATE_SUB(NOW(), INTERVAL 2 DAY));
 
--- 更新測試用戶的密碼哈希
+-- 更新測試用戶的密碼哈希（使用 bcrypt）
 UPDATE users 
 SET password = '$2a$10$NHoZK1qTk4K0Mh/47.WIXuJwKxEPp8o9r/himYVqHNbYNqJwO9Aqm'
 WHERE username = 'test_user'; 
